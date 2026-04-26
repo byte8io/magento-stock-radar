@@ -119,9 +119,10 @@ class Collection extends AbstractCollection implements SearchResultInterface
         return $this->getTable(SubscriptionInterface::DB_TABLE_NAME);
     }
 
-    private function setMainTable(string $table): void
+    public function setMainTable($table)
     {
         $this->_mainTable = $this->getTable($table);
+        return $this;
     }
 
     /**
