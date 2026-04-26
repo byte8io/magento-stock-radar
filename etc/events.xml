@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="cataloginventory_stock_item_save_after">
+        <observer name="byte8_stock_radar_enqueue" instance="Byte8\StockRadar\Observer\StockSaveObserver"/>
+    </event>
+</config>

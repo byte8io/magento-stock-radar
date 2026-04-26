@@ -1,0 +1,42 @@
+# Copyright © Byte8 Ltd. All rights reserved.
+# See LICENSE.txt for license details.
+
+type Mutation {
+    byte8StockRadarSubscribe(input: Byte8StockRadarSubscribeInput!): Byte8StockRadarSubscribeOutput @resolver(class: "Byte8\\StockRadar\\Model\\Resolver\\Subscribe") @doc(description: "Subscribe an email to a back-in-stock notification for a product (or variant simple SKU).")
+    byte8StockRadarUnsubscribe(token: String!): Byte8StockRadarUnsubscribeOutput @resolver(class: "Byte8\\StockRadar\\Model\\Resolver\\Unsubscribe") @doc(description: "One-click unsubscribe via the signed token from the notification email.")
+}
+
+type Query {
+    byte8StockRadarMySubscriptions: Byte8StockRadarSubscriptionList @resolver(class: "Byte8\\StockRadar\\Model\\Resolver\\CustomerSubscriptions") @doc(description: "Logged-in customer's pending back-in-stock subscriptions.")
+}
+
+input Byte8StockRadarSubscribeInput {
+    sku: String! @doc(description: "Product SKU. For configurable products, pass the simple variant SKU.")
+    email: String! @doc(description: "Subscriber email address.")
+}
+
+type Byte8StockRadarSubscribeOutput {
+    success: Boolean! @doc(description: "True if the subscription was created or already exists.")
+    created: Boolean! @doc(description: "True only when a new subscription row was inserted (false on duplicate).")
+    message: String! @doc(description: "Human-readable confirmation, suitable for direct UI display.")
+}
+
+type Byte8StockRadarUnsubscribeOutput {
+    success: Boolean! @doc(description: "True if the unsubscribe attempt was processed (does not reveal token validity).")
+    message: String!
+}
+
+type Byte8StockRadarSubscriptionList {
+    items: [Byte8StockRadarSubscription!]!
+    total_count: Int!
+}
+
+type Byte8StockRadarSubscription {
+    sku: String!
+    product_name: String
+    product_url: String
+    status: String!
+    created_at: String!
+    notified_at: String
+    unsubscribe_token: String! @doc(description: "Token for use with byte8StockRadarUnsubscribe.")
+}

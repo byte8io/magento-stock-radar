@@ -1,0 +1,33 @@
+<?php
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * @var \Byte8\StockRadar\Block\Product\View\NotifyMe $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!$block->isAvailable()) {
+    return;
+}
+?>
+<div class="byte8-stock-radar"
+     data-mage-init='{"Byte8_StockRadar/js/notify-me": {"url": "<?= $escaper->escapeJsQuote($block->getSubscribeUrl()) ?>", "defaultSku": "<?= $escaper->escapeJsQuote($block->getProductSku()) ?>", "variantSkuMap": <?= /* @noEscape */ $block->getVariantSkuMapJson() ?>}}'>
+    <h3 class="byte8-stock-radar__title"><?= $escaper->escapeHtml(__('Notify me when back in stock')) ?></h3>
+    <form class="byte8-stock-radar__form" method="post" action="<?= $escaper->escapeUrl($block->getSubscribeUrl()) ?>">
+        <input type="hidden" name="sku" value="<?= $escaper->escapeHtmlAttr($block->getProductSku()) ?>" data-role="sku"/>
+        <label class="byte8-stock-radar__label" for="byte8-stock-radar-email">
+            <?= $escaper->escapeHtml(__('Email address')) ?>
+        </label>
+        <input type="email"
+               id="byte8-stock-radar-email"
+               name="email"
+               required
+               value="<?= $escaper->escapeHtmlAttr($block->getCustomerEmail()) ?>"
+               class="input-text"/>
+        <button type="submit" class="action primary byte8-stock-radar__submit">
+            <span><?= $escaper->escapeHtml(__('Notify me')) ?></span>
+        </button>
+        <div class="byte8-stock-radar__message" data-role="message" role="status" aria-live="polite"></div>
+    </form>
+</div>

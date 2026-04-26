@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <byte8_stock_radar>
+            <general>
+                <active>0</active>
+            </general>
+            <dispatch>
+                <throttle_minutes>30</throttle_minutes>
+                <expiry_days>90</expiry_days>
+            </dispatch>
+            <email>
+                <sender>sales</sender>
+                <template>byte8_stock_radar_email_template</template>
+            </email>
+            <pingbell>
+                <threshold>50</threshold>
+            </pingbell>
+        </byte8_stock_radar>
+    </default>
+</config>

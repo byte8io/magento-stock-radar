@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="byte8_stock_radar_email_template"
+              label="Stock Radar — back in stock"
+              file="back_in_stock.html"
+              type="html"
+              module="Byte8_StockRadar"
+              area="frontend"/>
+</config>

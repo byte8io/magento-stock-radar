@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="Byte8\StockRadar\Block\Account\Subscriptions"
+                   name="byte8.stockradar.account.subscriptions"
+                   template="Byte8_StockRadar::account/subscriptions.phtml"
+                   cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>

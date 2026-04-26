@@ -1,0 +1,30 @@
+<!--@subject {{trans "%product_name is back in stock at %store_name" product_name=$product_name store_name=$store_name}} @-->
+<!--@vars {
+"var product_name":"Product Name",
+"var product_url":"Product URL",
+"var product_sku":"Product SKU",
+"var store_name":"Store Name",
+"var unsubscribe_url":"Unsubscribe URL"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<table>
+    <tr>
+        <td>
+            <h1>{{trans "Good news — it's back!"}}</h1>
+            <p>
+                {{trans "%product_name (%product_sku) is back in stock at %store_name." product_name=$product_name product_sku=$product_sku store_name=$store_name}}
+            </p>
+            <p>
+                <a href="{{var product_url}}">{{trans "View product"}}</a>
+            </p>
+            <p style="font-size:12px;color:#888;margin-top:24px">
+                {{trans "Don't want these alerts?"}}
+                <a href="{{var unsubscribe_url}}">{{trans "Unsubscribe"}}</a>
+            </p>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Byte8_StockRadar::stock_radar" title="Stock Radar" sortOrder="40">
+                    <resource id="Byte8_StockRadar::subscription" title="Subscriptions" sortOrder="10"/>
+                    <resource id="Byte8_StockRadar::demand" title="Demand heatmap" sortOrder="20"/>
+                    <resource id="Byte8_StockRadar::config" title="Stock Radar configuration" sortOrder="30"/>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

@@ -1,0 +1,35 @@
+{
+    "name": "byte8/module-stock-radar",
+    "description": "Stock Radar for Magento 2 — back-in-stock notifications with throttled batching, per-variant subscriptions, demand heatmap, GraphQL. Luma and Hyva compatible.",
+    "require": {
+        "php": "~8.2.0||~8.3.0||~8.4.0||~8.5.0",
+        "magento/module-catalog": "^104",
+        "magento/module-catalog-inventory": "*",
+        "magento/module-configurable-product": "*",
+        "magento/module-store": "*",
+        "byte8/module-core": "*"
+    },
+    "suggest": {
+        "byte8/module-pingbell": "Pipes subscriber-count alerts through the Byte8 admin notification channel.",
+        "byte8/module-stock-radar-plenty": "Bridges Stock Radar with the PlentyONE connector so notifications fire on ERP-confirmed inbound stock."
+    },
+    "type": "magento2-module",
+    "license": [
+        "proprietary"
+    ],
+    "authors": [
+        {
+            "name": "Byte8 Ltd",
+            "email": "support@byte8.io"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Byte8\\StockRadar\\": ""
+        }
+    },
+    "version": "1.0.0"
+}

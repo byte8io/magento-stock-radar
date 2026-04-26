@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <!-- subscription -->
+    <table name="byte8_stock_radar_subscription" resource="default" engine="innodb"
+           comment="Stock Radar — back-in-stock subscriptions">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
+                comment="Entity ID"/>
+        <column xsi:type="int" name="product_id" unsigned="true" nullable="false"
+                comment="Product ID (simple SKU when configurable variant)"/>
+        <column xsi:type="int" name="parent_product_id" unsigned="true" nullable="true"
+                comment="Parent configurable product ID (null for simple)"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false"
+                comment="Store ID"/>
+        <column xsi:type="int" name="customer_id" unsigned="true" nullable="true"
+                comment="Customer ID (null for guest)"/>
+        <column xsi:type="varchar" name="email" nullable="false" length="255"
+                comment="Subscriber email"/>
+        <column xsi:type="varchar" name="email_hash" nullable="false" length="64"
+                comment="SHA-256 of lowercased email — used for GDPR delete lookups"/>
+        <column xsi:type="varchar" name="unsubscribe_token" nullable="false" length="64"
+                comment="Random token for one-click unsubscribe"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="16" default="pending"
+                comment="pending|notified|cancelled|bounced"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="notified_at" nullable="true"
+                comment="When the back-in-stock email was sent"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="BYTE8_STOCK_RADAR_SUB_PRODUCT_EMAIL_STORE">
+            <column name="product_id"/>
+            <column name="email_hash"/>
+            <column name="store_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="BYTE8_STOCK_RADAR_SUB_PRODUCT_ID_CAT_PRD_ENT_ENT_ID"
+                    table="byte8_stock_radar_subscription" column="product_id"
+                    referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="BYTE8_STOCK_RADAR_SUB_STORE_ID_STORE_STORE_ID"
+                    table="byte8_stock_radar_subscription" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="BYTE8_STOCK_RADAR_SUB_STATUS_PRODUCT_ID" indexType="btree">
+            <column name="status"/>
+            <column name="product_id"/>
+        </index>
+        <index referenceId="BYTE8_STOCK_RADAR_SUB_PARENT_PRODUCT_ID" indexType="btree">
+            <column name="parent_product_id"/>
+        </index>
+        <index referenceId="BYTE8_STOCK_RADAR_SUB_EMAIL_HASH" indexType="btree">
+            <column name="email_hash"/>
+        </index>
+    </table>
+
+    <!-- dispatch queue (throttled batches) -->
+    <table name="byte8_stock_radar_dispatch" resource="default" engine="innodb"
+           comment="Stock Radar — staggered notification dispatch queue">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
+                comment="Entity ID"/>
+        <column xsi:type="int" name="subscription_id" unsigned="true" nullable="false"
+                comment="FK to byte8_stock_radar_subscription"/>
+        <column xsi:type="timestamp" name="scheduled_at" nullable="false"
+                comment="When this notification is allowed to send (throttle window)"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="16" default="queued"
+                comment="queued|sent|failed|skipped"/>
+        <column xsi:type="smallint" name="attempts" unsigned="true" nullable="false" default="0"
+                comment="Send attempts"/>
+        <column xsi:type="text" name="last_error" nullable="true"
+                comment="Last error message (truncated)"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="BYTE8_STOCK_RADAR_DISP_SUB_ID_BYTE8_STOCK_RADAR_SUB_ENT_ID"
+                    table="byte8_stock_radar_dispatch" column="subscription_id"
+                    referenceTable="byte8_stock_radar_subscription" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="BYTE8_STOCK_RADAR_DISP_STATUS_SCHEDULED_AT" indexType="btree">
+            <column name="status"/>
+            <column name="scheduled_at"/>
+        </index>
+    </table>
+</schema>

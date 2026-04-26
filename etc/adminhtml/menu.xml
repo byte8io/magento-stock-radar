@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Byte8_StockRadar::base"
+             title="Stock Radar"
+             translate="title"
+             module="Byte8_StockRadar"
+             sortOrder="40"
+             parent="Byte8_Core::byte8"
+             resource="Byte8_StockRadar::stock_radar"/>
+        <add id="Byte8_StockRadar::demand"
+             title="Demand Heatmap"
+             translate="title"
+             module="Byte8_StockRadar"
+             sortOrder="0"
+             parent="Byte8_StockRadar::base"
+             action="byte8/demand/index"
+             resource="Byte8_StockRadar::demand"/>
+        <add id="Byte8_StockRadar::subscription"
+             title="Subscriptions"
+             translate="title"
+             module="Byte8_StockRadar"
+             sortOrder="10"
+             parent="Byte8_StockRadar::base"
+             action="byte8/subscription/index"
+             resource="Byte8_StockRadar::subscription"/>
+    </menu>
+</config>

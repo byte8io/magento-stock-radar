@@ -1,0 +1,48 @@
+{
+    "byte8_stock_radar_subscription": {
+        "column": {
+            "entity_id": true,
+            "product_id": true,
+            "parent_product_id": true,
+            "store_id": true,
+            "customer_id": true,
+            "email": true,
+            "email_hash": true,
+            "unsubscribe_token": true,
+            "status": true,
+            "created_at": true,
+            "notified_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "BYTE8_STOCK_RADAR_SUB_PRODUCT_EMAIL_STORE": true,
+            "BYTE8_STOCK_RADAR_SUB_PRODUCT_ID_CAT_PRD_ENT_ENT_ID": true,
+            "BYTE8_STOCK_RADAR_SUB_STORE_ID_STORE_STORE_ID": true
+        },
+        "index": {
+            "BYTE8_STOCK_RADAR_SUB_STATUS_PRODUCT_ID": true,
+            "BYTE8_STOCK_RADAR_SUB_PARENT_PRODUCT_ID": true,
+            "BYTE8_STOCK_RADAR_SUB_EMAIL_HASH": true
+        }
+    },
+    "byte8_stock_radar_dispatch": {
+        "column": {
+            "entity_id": true,
+            "subscription_id": true,
+            "scheduled_at": true,
+            "status": true,
+            "attempts": true,
+            "last_error": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "BYTE8_STOCK_RADAR_DISP_SUB_ID_BYTE8_STOCK_RADAR_SUB_ENT_ID": true
+        },
+        "index": {
+            "BYTE8_STOCK_RADAR_DISP_STATUS_SCHEDULED_AT": true
+        }
+    }
+}

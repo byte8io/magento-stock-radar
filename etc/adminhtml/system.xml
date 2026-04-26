@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="byte8" translate="label" sortOrder="1010">
+            <label>Byte8</label>
+        </tab>
+        <section id="byte8_stock_radar" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Stock Radar</label>
+            <tab>byte8</tab>
+            <resource>Byte8_StockRadar::config</resource>
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="dispatch" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Dispatch</label>
+                <field id="throttle_minutes" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Throttle window (minutes)</label>
+                    <comment>Notifications for a single product are spread randomly over this window so a restock doesn't blast all subscribers at once.</comment>
+                    <validate>validate-digits validate-zero-or-greater</validate>
+                </field>
+                <field id="expiry_days" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Subscription expiry (days)</label>
+                    <comment>Pending subscriptions older than this are auto-cancelled. 0 disables expiry.</comment>
+                    <validate>validate-digits validate-zero-or-greater</validate>
+                </field>
+            </group>
+            <group id="email" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Email</label>
+                <field id="sender" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sender</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                </field>
+                <field id="template" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                </field>
+            </group>
+            <group id="pingbell" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Pingbell integration</label>
+                <field id="threshold" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Subscriber alert threshold</label>
+                    <comment>When pending subscriber count for any single product exceeds this number, post an admin notification (requires Byte8_Pingbell). 0 disables.</comment>
+                    <validate>validate-digits validate-zero-or-greater</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

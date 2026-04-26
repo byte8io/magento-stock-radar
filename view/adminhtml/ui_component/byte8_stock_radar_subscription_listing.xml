@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">byte8_stock_radar_subscription_listing.byte8_stock_radar_subscription_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>byte8_stock_radar_subscription_listing_columns</spinner>
+        <deps>
+            <dep>byte8_stock_radar_subscription_listing.byte8_stock_radar_subscription_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="byte8_stock_radar_subscription_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Byte8_StockRadar::subscription</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="byte8_stock_radar_subscription_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filterSearch name="fulltext"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="byte8_stock_radar_subscription_listing_columns">
+        <column name="entity_id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">ID</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+        <column name="product_id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Product ID</label>
+            </settings>
+        </column>
+        <column name="parent_product_id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Parent ID</label>
+            </settings>
+        </column>
+        <column name="store_id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Store</label>
+            </settings>
+        </column>
+        <column name="email">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Email</label>
+            </settings>
+        </column>
+        <column name="customer_id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Customer ID</label>
+            </settings>
+        </column>
+        <column name="status" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+                <options class="Byte8\StockRadar\Ui\Component\Listing\Column\SubscriptionStatus\Options"/>
+            </settings>
+        </column>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Created</label>
+            </settings>
+        </column>
+        <column name="notified_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Notified</label>
+            </settings>
+        </column>
+    </columns>
+</listing>

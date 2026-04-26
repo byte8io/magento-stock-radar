@@ -1,0 +1,64 @@
+<?php
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * @var \Byte8\StockRadar\Block\Account\Subscriptions $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+$items = $block->getSubscriptions();
+?>
+<div class="byte8-stock-radar-account">
+    <div class="page-title-wrapper">
+        <h1 class="page-title"><span class="base"><?= $escaper->escapeHtml(__('My Stock Notifications')) ?></span></h1>
+    </div>
+
+    <?php if ($items === []): ?>
+        <div class="message info empty">
+            <span><?= $escaper->escapeHtml(__("You don't have any active stock notifications. Visit a product page that's out of stock to subscribe.")) ?></span>
+        </div>
+    <?php else: ?>
+        <div class="table-wrapper">
+            <table class="data table table-additional" id="byte8-stock-radar-subscriptions">
+                <caption class="table-caption"><?= $escaper->escapeHtml(__('My Stock Notifications')) ?></caption>
+                <thead>
+                <tr>
+                    <th scope="col" class="col product"><?= $escaper->escapeHtml(__('Product')) ?></th>
+                    <th scope="col" class="col sku"><?= $escaper->escapeHtml(__('SKU')) ?></th>
+                    <th scope="col" class="col status"><?= $escaper->escapeHtml(__('Status')) ?></th>
+                    <th scope="col" class="col created"><?= $escaper->escapeHtml(__('Subscribed')) ?></th>
+                    <th scope="col" class="col actions">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($items as $item): ?>
+                    <tr>
+                        <td data-th="<?= $escaper->escapeHtmlAttr(__('Product')) ?>" class="col product">
+                            <?php if ($item['product_url']): ?>
+                                <a href="<?= $escaper->escapeUrl($item['product_url']) ?>"><?= $escaper->escapeHtml($item['product_name']) ?></a>
+                            <?php else: ?>
+                                <span><?= $escaper->escapeHtml($item['product_name']) ?></span>
+                            <?php endif; ?>
+                        </td>
+                        <td data-th="<?= $escaper->escapeHtmlAttr(__('SKU')) ?>" class="col sku"><?= $escaper->escapeHtml($item['sku']) ?></td>
+                        <td data-th="<?= $escaper->escapeHtmlAttr(__('Status')) ?>" class="col status">
+                            <?= $escaper->escapeHtml($block->getStatusLabel($item['status'])) ?>
+                        </td>
+                        <td data-th="<?= $escaper->escapeHtmlAttr(__('Subscribed')) ?>" class="col created">
+                            <?= $escaper->escapeHtml($item['created_at']) ?>
+                        </td>
+                        <td data-th="<?= $escaper->escapeHtmlAttr(__('Actions')) ?>" class="col actions">
+                            <a class="action delete"
+                               href="<?= $escaper->escapeUrl($block->getCancelUrl($item['unsubscribe_token'])) ?>"
+                               onclick="return confirm('<?= $escaper->escapeJs(__('Cancel this notification?')) ?>')">
+                                <span><?= $escaper->escapeHtml(__('Cancel')) ?></span>
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</div>
