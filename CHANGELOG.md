@@ -2,6 +2,13 @@
 
 All notable changes to `byte8/module-stock-radar` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); subsequent releases are written automatically by [release-please](https://github.com/googleapis/release-please) from Conventional Commits — see [`RELEASING.md`](./RELEASING.md).
 
+## [1.0.1](https://github.com/byte8io/magento-stock-radar/compare/v1.0.0...v1.0.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* **docs:** lock landing page stats strip to fixed 4-up so the MIT card stops wrapping ([cee56ae](https://github.com/byte8io/magento-stock-radar/commit/cee56aeaaabdf5dfc193c7ed629870d8db2a5eac))
+
 ## [1.0.0] — 2026-05-13
 
 Initial public release.
