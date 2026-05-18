@@ -19,9 +19,33 @@
                 <sender>sales</sender>
                 <template>byte8_stock_radar_email_template</template>
             </email>
-            <pingbell>
+            <admin_alert>
                 <threshold>50</threshold>
-            </pingbell>
+                <bell_enabled>1</bell_enabled>
+                <email_enabled>1</email_enabled>
+                <email_sender>general</email_sender>
+                <email_template>byte8_stock_radar_admin_alert_email_template</email_template>
+            </admin_alert>
+            <security>
+                <rate_limit_enabled>1</rate_limit_enabled>
+                <captcha_form_id>byte8_stock_radar_subscribe</captcha_form_id>
+                <rate_limit_per_ip>5</rate_limit_per_ip>
+                <rate_limit_per_email>3</rate_limit_per_email>
+                <honeypot_enabled>1</honeypot_enabled>
+                <hide_created_flag>1</hide_created_flag>
+                <captcha_enabled>0</captcha_enabled>
+                <double_optin_enabled>0</double_optin_enabled>
+                <confirmation_email_template>byte8_stock_radar_security_confirmation_email_template</confirmation_email_template>
+            </security>
         </byte8_stock_radar>
+        <captcha translate="label">
+            <frontend>
+                <areas>
+                    <byte8_stock_radar_subscribe>
+                        <label>Stock Radar — back-in-stock subscribe</label>
+                    </byte8_stock_radar_subscribe>
+                </areas>
+            </frontend>
+        </captcha>
     </default>
 </config>

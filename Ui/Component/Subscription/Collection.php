@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Byte8\StockRadar\Ui\Component\Demand;
+namespace Byte8\StockRadar\Ui\Component\Subscription;
 
 use Byte8\StockRadar\Api\Data\SubscriptionInterface;
 use Byte8\StockRadar\Model\ResourceModel\Subscription as SubscriptionResource;
@@ -20,23 +20,12 @@ use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Psr\Log\LoggerInterface;
 
 /**
- * Aggregates pending subscriptions per product+store and joins product SKU/name
- * for the admin demand heatmap. This is the merchandiser's reorder report:
- * "rank what's bleeding the most lost sales right now."
+ * Admin subscription grid data source — joins product SKU + name onto every
+ * subscription row so admins can search "who's waiting for SKU X" instead of
+ * having to translate from numeric product_id.
  *
- * SQL shape:
- *   SELECT s.product_id, s.parent_product_id, s.store_id,
- *          COUNT(*) AS subscriber_count,
- *          MIN(s.created_at) AS first_subscribed,
- *          MAX(s.created_at) AS latest_subscribed,
- *          p.sku, name.value AS product_name
- *   FROM byte8_stock_radar_subscription s
- *   LEFT JOIN catalog_product_entity p ON p.entity_id = s.product_id
- *   LEFT JOIN catalog_product_entity_varchar name ON name.entity_id = s.product_id
- *        AND name.attribute_id = <name attr id> AND name.store_id IN (0, s.store_id)
- *   WHERE s.status = 'pending'
- *   GROUP BY s.product_id, s.store_id
- *   ORDER BY subscriber_count DESC
+ * Modelled on the Demand Collection (same JOIN strategy) but without the
+ * COUNT/GROUP aggregation — this grid is one row per subscription.
  */
 class Collection extends AbstractCollection implements SearchResultInterface
 {
@@ -49,8 +38,8 @@ class Collection extends AbstractCollection implements SearchResultInterface
         ManagerInterface $eventManager,
         private readonly EavConfig $eavConfig,
         $mainTable = SubscriptionInterface::DB_TABLE_NAME,
-        $eventPrefix = 'byte8_stock_radar_demand_collection',
-        $eventObject = 'demand_collection',
+        $eventPrefix = 'byte8_stock_radar_subscription_collection',
+        $eventObject = 'subscription_collection',
         $resourceModel = SubscriptionResource::class,
         $connection = null,
         ?\Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
@@ -70,23 +59,17 @@ class Collection extends AbstractCollection implements SearchResultInterface
         $select->from(
             [$this->aliasMain => $this->getMainTable()],
             [
+                SubscriptionInterface::ENTITY_ID,
                 SubscriptionInterface::PRODUCT_ID,
                 SubscriptionInterface::PARENT_PRODUCT_ID,
                 SubscriptionInterface::STORE_ID,
-                'subscriber_count' => new \Zend_Db_Expr('COUNT(*)'),
-                'first_subscribed' => new \Zend_Db_Expr('MIN(' . $this->aliasMain . '.' . SubscriptionInterface::CREATED_AT . ')'),
-                'latest_subscribed' => new \Zend_Db_Expr('MAX(' . $this->aliasMain . '.' . SubscriptionInterface::CREATED_AT . ')'),
+                SubscriptionInterface::CUSTOMER_ID,
+                SubscriptionInterface::EMAIL,
+                SubscriptionInterface::STATUS,
+                SubscriptionInterface::CREATED_AT,
+                SubscriptionInterface::NOTIFIED_AT,
             ]
         );
-        $select->where(
-            $this->aliasMain . '.' . SubscriptionInterface::STATUS . ' = ?',
-            SubscriptionInterface::STATUS_PENDING
-        );
-        $select->group([
-            $this->aliasMain . '.' . SubscriptionInterface::PRODUCT_ID,
-            $this->aliasMain . '.' . SubscriptionInterface::STORE_ID,
-        ]);
-        $select->order('subscriber_count DESC');
 
         $select->joinLeft(
             ['p' => $this->getTable('catalog_product_entity')],
@@ -102,7 +85,7 @@ class Collection extends AbstractCollection implements SearchResultInterface
         }
 
         if ($nameAttrId > 0) {
-            // Pick store-scoped name when present, else fallback to admin (store_id = 0)
+            // Pick store-scoped name where present, else fallback to admin (store_id = 0)
             $select->joinLeft(
                 ['name' => $this->getTable('catalog_product_entity_varchar')],
                 'name.entity_id = ' . $this->aliasMain . '.' . SubscriptionInterface::PRODUCT_ID
@@ -113,8 +96,8 @@ class Collection extends AbstractCollection implements SearchResultInterface
         }
 
         // AbstractDb has no setSelect(); assign the protected property directly.
-        // We've built the full select inline (FROM + columns + joins + grouping)
-        // rather than mutating the parent's default, so this replaces wholesale.
+        // We've built the full select inline (FROM + columns + joins) rather
+        // than mutating the parent's default, so this replaces wholesale.
         $this->_select = $select;
         return $this;
     }
@@ -130,9 +113,6 @@ class Collection extends AbstractCollection implements SearchResultInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAggregations(): ?AggregationInterface
     {
         return $this->aggregations ?? null;

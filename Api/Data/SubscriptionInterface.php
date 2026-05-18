@@ -20,11 +20,13 @@ interface SubscriptionInterface
     public const EMAIL = 'email';
     public const EMAIL_HASH = 'email_hash';
     public const UNSUBSCRIBE_TOKEN = 'unsubscribe_token';
+    public const CONFIRMATION_TOKEN = 'confirmation_token';
     public const STATUS = 'status';
     public const CREATED_AT = 'created_at';
     public const NOTIFIED_AT = 'notified_at';
     public const UPDATED_AT = 'updated_at';
 
+    public const STATUS_UNCONFIRMED = 'unconfirmed';
     public const STATUS_PENDING = 'pending';
     public const STATUS_NOTIFIED = 'notified';
     public const STATUS_CANCELLED = 'cancelled';

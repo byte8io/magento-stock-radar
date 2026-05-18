@@ -24,14 +24,14 @@ class ExpireSubscriptions
     ) {
     }
 
-    public function execute(): void
+    public function execute(): int
     {
         $days = $this->config->getSubscriptionExpiryDays();
         if ($days <= 0) {
-            return;
+            return 0;
         }
 
         $cutoff = date('Y-m-d H:i:s', strtotime(sprintf('-%d days', $days)));
-        $this->subscriptionResource->cancelExpired($cutoff);
+        return $this->subscriptionResource->cancelExpired($cutoff);
     }
 }

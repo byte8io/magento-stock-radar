@@ -8,18 +8,32 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Byte8\StockRadar\Model\ConfigInterface" type="Byte8\StockRadar\Model\Config"/>
 
-    <virtualType name="Byte8\StockRadar\Ui\Component\Subscription\DataProvider\SearchResult" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <!-- Bind tracker to the catalog session so guests and customers share the same
+         "already subscribed" state across the PDP -->
+    <type name="Byte8\StockRadar\Model\SubscribedProductTracker">
         <arguments>
-            <argument name="mainTable" xsi:type="const">Byte8\StockRadar\Api\Data\SubscriptionInterface::DB_TABLE_NAME</argument>
-            <argument name="resourceModel" xsi:type="string">Byte8\StockRadar\Model\ResourceModel\Subscription</argument>
+            <argument name="session" xsi:type="object">Magento\Catalog\Model\Session\Proxy</argument>
         </arguments>
-    </virtualType>
+    </type>
 
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="byte8_stock_radar_subscription_listing_data_source" xsi:type="string">Byte8\StockRadar\Ui\Component\Subscription\DataProvider\SearchResult</item>
+                <item name="byte8_stock_radar_subscription_listing_data_source" xsi:type="string">Byte8\StockRadar\Ui\Component\Subscription\Collection</item>
                 <item name="byte8_stock_radar_demand_listing_data_source" xsi:type="string">Byte8\StockRadar\Ui\Component\Demand\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="byte8_stock_radar_forget" xsi:type="object">Byte8\StockRadar\Console\Command\ForgetCommand</item>
+                <item name="byte8_stock_radar_notify" xsi:type="object">Byte8\StockRadar\Console\Command\NotifyCommand</item>
+                <item name="byte8_stock_radar_dispatch_run" xsi:type="object">Byte8\StockRadar\Console\Command\DispatchRunCommand</item>
+                <item name="byte8_stock_radar_expire" xsi:type="object">Byte8\StockRadar\Console\Command\ExpireCommand</item>
+                <item name="byte8_stock_radar_cancel" xsi:type="object">Byte8\StockRadar\Console\Command\CancelCommand</item>
+                <item name="byte8_stock_radar_stats" xsi:type="object">Byte8\StockRadar\Console\Command\StatsCommand</item>
             </argument>
         </arguments>
     </type>

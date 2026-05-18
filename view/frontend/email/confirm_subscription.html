@@ -1,0 +1,31 @@
+<!--@subject {{trans "Confirm your back-in-stock alert for %product_name" product_name=$product_name}} @-->
+<!--@vars {
+"var product_name":"Product Name",
+"var product_url":"Product URL",
+"var product_sku":"Product SKU",
+"var store_name":"Store Name",
+"var confirm_url":"Confirmation URL"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<table>
+    <tr>
+        <td>
+            <h1>{{trans "One more step"}}</h1>
+            <p>
+                {{trans "Please confirm you want to be notified when %product_name (%product_sku) is back in stock at %store_name." product_name=$product_name product_sku=$product_sku store_name=$store_name}}
+            </p>
+            <p>
+                <a href="{{var confirm_url}}" style="display:inline-block;padding:12px 24px;background-color:#1979c3;color:#ffffff;text-decoration:none;border-radius:3px;">
+                    {{trans "Confirm subscription"}}
+                </a>
+            </p>
+            <p style="font-size:12px;color:#888;margin-top:24px">
+                {{trans "If you didn't request this, you can safely ignore this email — no subscription will be created."}}
+            </p>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

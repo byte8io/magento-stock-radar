@@ -20,5 +20,35 @@ interface ConfigInterface
 
     public function getEmailTemplate(?int $storeId = null): string;
 
-    public function getPingbellThreshold(?int $storeId = null): int;
+    public function getAdminAlertThreshold(?int $storeId = null): int;
+
+    public function isAdminAlertBellEnabled(?int $storeId = null): bool;
+
+    public function isAdminAlertEmailEnabled(?int $storeId = null): bool;
+
+    /**
+     * Returns the configured recipient, or the General Contact email when
+     * the field is blank, or empty string when neither resolves.
+     */
+    public function getAdminAlertRecipientEmail(?int $storeId = null): string;
+
+    public function getAdminAlertEmailSender(?int $storeId = null): string;
+
+    public function getAdminAlertEmailTemplate(?int $storeId = null): string;
+
+    public function isRateLimitEnabled(?int $storeId = null): bool;
+
+    public function getRateLimitPerIp(?int $storeId = null): int;
+
+    public function getRateLimitPerEmail(?int $storeId = null): int;
+
+    public function isHoneypotEnabled(?int $storeId = null): bool;
+
+    public function isCreatedFlagHidden(?int $storeId = null): bool;
+
+    public function isCaptchaEnabled(?int $storeId = null): bool;
+
+    public function isDoubleOptinEnabled(?int $storeId = null): bool;
+
+    public function getConfirmationEmailTemplate(?int $storeId = null): string;
 }

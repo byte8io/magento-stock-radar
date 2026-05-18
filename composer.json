@@ -1,22 +1,28 @@
 {
     "name": "byte8/module-stock-radar",
-    "description": "Stock Radar for Magento 2 — back-in-stock notifications with throttled batching, per-variant subscriptions, demand heatmap, GraphQL. Luma and Hyva compatible.",
+    "description": "Stock Radar for Magento 2 — back-in-stock notifications with throttled batching, per-variant subscriptions, demand heatmap, GraphQL. Luma compatible; Hyva via byte8/module-stock-radar-hyva.",
     "require": {
         "php": "~8.2.0||~8.3.0||~8.4.0||~8.5.0",
+        "magento/framework": "*",
+        "magento/module-backend": "*",
         "magento/module-catalog": "^104",
         "magento/module-catalog-inventory": "*",
         "magento/module-configurable-product": "*",
+        "magento/module-customer": "*",
+        "magento/module-email": "*",
+        "magento/module-graph-ql": "*",
         "magento/module-store": "*",
+        "magento/module-ui": "*",
         "byte8/module-core": "*"
     },
     "suggest": {
-        "byte8/module-pingbell": "Pipes subscriber-count alerts through the Byte8 admin notification channel.",
-        "byte8/module-stock-radar-plenty": "Bridges Stock Radar with the PlentyONE connector so notifications fire on ERP-confirmed inbound stock."
+        "magento/module-captcha": "Enables the CAPTCHA toggle under Byte8 → Stock Radar → Abuse protection.",
+        "magento/module-inventory-sales-api": "Stock Radar uses MSI's IsProductSalable for the in-stock check when this is available (default on Magento 2.4+). Falls back to legacy CatalogInventory when disabled.",
+        "byte8/module-stock-radar-plenty": "Bridges Stock Radar with the PlentyONE connector so notifications fire on ERP-confirmed inbound stock.",
+        "byte8/module-stock-radar-hyva": "Hyva Theme storefront integration."
     },
     "type": "magento2-module",
-    "license": [
-        "proprietary"
-    ],
+    "license": "MIT",
     "authors": [
         {
             "name": "Byte8 Ltd",

@@ -10,24 +10,45 @@
 if (!$block->isAvailable()) {
     return;
 }
+
+$alreadySubscribed = $block->isAlreadySubscribed();
+$isConfigurable = $block->isConfigurable();
+// Configurable: start hidden, swatch mixin reveals on OOS click. Already-subscribed wins.
+$startHidden = $alreadySubscribed || $isConfigurable;
 ?>
-<div class="byte8-stock-radar"
-     data-mage-init='{"Byte8_StockRadar/js/notify-me": {"url": "<?= $escaper->escapeJsQuote($block->getSubscribeUrl()) ?>", "defaultSku": "<?= $escaper->escapeJsQuote($block->getProductSku()) ?>", "variantSkuMap": <?= /* @noEscape */ $block->getVariantSkuMapJson() ?>}}'>
-    <h3 class="byte8-stock-radar__title"><?= $escaper->escapeHtml(__('Notify me when back in stock')) ?></h3>
-    <form class="byte8-stock-radar__form" method="post" action="<?= $escaper->escapeUrl($block->getSubscribeUrl()) ?>">
+<div class="byte8-stock-radar<?= $alreadySubscribed ? ' byte8-stock-radar--subscribed' : '' ?><?= $isConfigurable ? ' byte8-stock-radar--configurable' : '' ?>"
+     data-mage-init='{"Byte8_StockRadar/js/notify-me": {"url": "<?= $escaper->escapeJsQuote($block->getSubscribeUrl()) ?>", "defaultSku": "<?= $escaper->escapeJsQuote($block->getProductSku()) ?>", "variantSkuMap": <?= /* @noEscape */ $block->getVariantSkuMapJson() ?>, "subscribedSkus": <?= /* @noEscape */ $block->getSessionSubscribedSkusJson() ?>, "isConfigurable": <?= $isConfigurable ? 'true' : 'false' ?>}}'
+     data-byte8-variant-skus='<?= /* @noEscape */ $block->getVariantSkuMapJson() ?>'>
+    <div class="byte8-stock-radar__subscribed-panel" data-role="subscribed-panel" <?= $alreadySubscribed ? '' : 'hidden' ?>>
+        <p class="byte8-stock-radar__subscribed-text">
+            <?= $escaper->escapeHtml(__("You're on the list — we'll email you when this is back in stock.")) ?>
+        </p>
+    </div>
+    <h3 class="byte8-stock-radar__title" data-role="form-title" <?= $startHidden ? 'hidden' : '' ?>><?= $escaper->escapeHtml(__('Notify me when back in stock')) ?></h3>
+    <form class="byte8-stock-radar__form" method="post" action="<?= $escaper->escapeUrl($block->getSubscribeUrl()) ?>" data-role="form" <?= $startHidden ? 'hidden' : '' ?>>
         <input type="hidden" name="sku" value="<?= $escaper->escapeHtmlAttr($block->getProductSku()) ?>" data-role="sku"/>
+        <?php if ($block->isHoneypotEnabled()): ?>
+            <div class="byte8-stock-radar__hp" aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">
+                <label for="byte8-stock-radar-website"><?= $escaper->escapeHtml(__('Website (leave empty)')) ?></label>
+                <input type="text" id="byte8-stock-radar-website" name="website" tabindex="-1" autocomplete="off" value=""/>
+            </div>
+        <?php endif; ?>
         <label class="byte8-stock-radar__label" for="byte8-stock-radar-email">
             <?= $escaper->escapeHtml(__('Email address')) ?>
         </label>
-        <input type="email"
-               id="byte8-stock-radar-email"
-               name="email"
-               required
-               value="<?= $escaper->escapeHtmlAttr($block->getCustomerEmail()) ?>"
-               class="input-text"/>
-        <button type="submit" class="action primary byte8-stock-radar__submit">
-            <span><?= $escaper->escapeHtml(__('Notify me')) ?></span>
-        </button>
+        <div class="byte8-stock-radar__row">
+            <input type="email"
+                   id="byte8-stock-radar-email"
+                   name="email"
+                   required
+                   placeholder="<?= $escaper->escapeHtmlAttr(__('you@example.com')) ?>"
+                   value="<?= $escaper->escapeHtmlAttr($block->getCustomerEmail()) ?>"
+                   class="input-text byte8-stock-radar__input"/>
+            <button type="submit" class="action primary byte8-stock-radar__submit">
+                <span><?= $escaper->escapeHtml(__('Notify me')) ?></span>
+            </button>
+        </div>
+        <?= /* @noEscape */ $block->getChildHtml('captcha') ?>
         <div class="byte8-stock-radar__message" data-role="message" role="status" aria-live="polite"></div>
     </form>
 </div>

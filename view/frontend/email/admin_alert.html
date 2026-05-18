@@ -1,0 +1,41 @@
+<!--@subject {{trans "Stock Radar: %subscriber_count customers waiting for %product_name" subscriber_count=$subscriber_count product_name=$product_name}} @-->
+<!--@vars {
+"var product_name":"Product Name",
+"var product_sku":"Product SKU",
+"var product_url":"Product URL",
+"var subscriber_count":"Pending subscriber count",
+"var threshold":"Configured threshold",
+"var store_name":"Store Name",
+"var store_id":"Store ID",
+"var demand_url":"Demand Heatmap URL"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<table>
+    <tr>
+        <td>
+            <h1>{{trans "High-demand subscriber alert"}}</h1>
+            <p>
+                {{trans "%product_name (%product_sku) has just crossed the high-demand threshold of %threshold pending subscribers on %store_name." product_name=$product_name product_sku=$product_sku threshold=$threshold store_name=$store_name}}
+            </p>
+            <p>
+                <strong>{{trans "Pending subscribers:"}}</strong> {{var subscriber_count}}<br/>
+                <strong>{{trans "Threshold:"}}</strong> {{var threshold}}<br/>
+                <strong>{{trans "Store:"}}</strong> {{var store_name}} ({{var store_id}})
+            </p>
+            <p>
+                <a href="{{var demand_url}}" style="display:inline-block;padding:10px 20px;background-color:#1979c3;color:#ffffff;text-decoration:none;border-radius:3px;">
+                    {{trans "Open Demand Heatmap"}}
+                </a>
+                &nbsp;
+                <a href="{{var product_url}}">{{trans "View product"}}</a>
+            </p>
+            <p style="font-size:12px;color:#888;margin-top:24px">
+                {{trans "This alert fires once each time a product first crosses the threshold. Adjust or disable under Stores → Configuration → Byte8 → Stock Radar → Admin alerts."}}
+            </p>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

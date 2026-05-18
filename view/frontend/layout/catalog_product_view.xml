@@ -11,7 +11,23 @@
             <block class="Byte8\StockRadar\Block\Product\View\NotifyMe"
                    name="byte8.stockradar.notify_me"
                    template="Byte8_StockRadar::product/view/notify_me.phtml"
-                   after="-"/>
+                   after="-">
+                <block class="Magento\Captcha\Block\Captcha"
+                       name="byte8.stockradar.captcha"
+                       as="captcha"
+                       template="Magento_Captcha::default.phtml"
+                       ifconfig="byte8_stock_radar/security/captcha_enabled">
+                    <action method="setFormId">
+                        <argument name="formId" xsi:type="string">byte8_stock_radar_subscribe</argument>
+                    </action>
+                    <action method="setImgWidth">
+                        <argument name="width" xsi:type="string">230</argument>
+                    </action>
+                    <action method="setImgHeight">
+                        <argument name="height" xsi:type="string">50</argument>
+                    </action>
+                </block>
+            </block>
         </referenceContainer>
     </body>
 </page>

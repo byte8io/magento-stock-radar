@@ -54,8 +54,13 @@ class Dispatch extends AbstractResource
      * Fetch up to $limit rows due for sending, with their joined subscription data.
      * Returns plain arrays — the cron drains the queue as a flat batch and doesn't
      * need full model hydration.
+     *
+     * `$ignoreSchedule = true` drops the scheduled_at filter so every queued row
+     * is returned regardless of its throttle offset. Use this only from the
+     * `dispatch:run --force` CLI path — the cron must continue to honour
+     * scheduled_at so the throttle window actually staggers the blast.
      */
-    public function fetchDueDispatchRows(int $limit): array
+    public function fetchDueDispatchRows(int $limit, bool $ignoreSchedule = false): array
     {
         $connection = $this->getConnection();
         $select = $connection->select()
@@ -80,12 +85,31 @@ class Dispatch extends AbstractResource
                 ]
             )
             ->where('d.' . DispatchInterface::STATUS . ' = ?', DispatchInterface::STATUS_QUEUED)
-            ->where('s.' . SubscriptionInterface::STATUS . ' = ?', SubscriptionInterface::STATUS_PENDING)
-            ->where('d.' . DispatchInterface::SCHEDULED_AT . ' <= ?', date('Y-m-d H:i:s'))
-            ->order('d.' . DispatchInterface::SCHEDULED_AT . ' ASC')
+            ->where('s.' . SubscriptionInterface::STATUS . ' = ?', SubscriptionInterface::STATUS_PENDING);
+
+        if (!$ignoreSchedule) {
+            $select->where('d.' . DispatchInterface::SCHEDULED_AT . ' <= ?', date('Y-m-d H:i:s'));
+        }
+
+        $select->order('d.' . DispatchInterface::SCHEDULED_AT . ' ASC')
             ->limit($limit);
 
         return $connection->fetchAll($select);
+    }
+
+    /**
+     * @return array<string,int>
+     */
+    public function getCountsByStatus(): array
+    {
+        $connection = $this->getConnection();
+        $pairs = $connection->fetchPairs(
+            $connection->select()
+                ->from($this->getMainTable(), [DispatchInterface::STATUS, 'cnt' => 'COUNT(*)'])
+                ->group(DispatchInterface::STATUS)
+        );
+
+        return array_map('intval', $pairs);
     }
 
     public function markSent(int $dispatchId): void
@@ -99,16 +123,33 @@ class Dispatch extends AbstractResource
 
     public function recordFailure(int $dispatchId, int $attempts, string $error): void
     {
-        $status = $attempts >= DispatchInterface::MAX_ATTEMPTS
-            ? DispatchInterface::STATUS_FAILED
-            : DispatchInterface::STATUS_QUEUED;
+        if ($attempts >= DispatchInterface::MAX_ATTEMPTS) {
+            $this->getConnection()->update(
+                $this->getMainTable(),
+                [
+                    DispatchInterface::STATUS => DispatchInterface::STATUS_FAILED,
+                    DispatchInterface::ATTEMPTS => $attempts,
+                    DispatchInterface::LAST_ERROR => mb_substr($error, 0, 1024),
+                ],
+                [DispatchInterface::ENTITY_ID . ' = ?' => $dispatchId]
+            );
+            return;
+        }
+
+        // Exponential backoff: push the next attempt out by 2^attempts
+        // minutes, capped so a flaky-but-recoverable mail provider doesn't
+        // get a 16-hour delay between retries.
+        //   attempts=1 -> +2 min, attempts=2 -> +4 min, attempts=3 -> +8 min.
+        $delaySeconds = min(2 ** $attempts, 60) * 60;
+        $nextSchedule = date('Y-m-d H:i:s', time() + $delaySeconds);
 
         $this->getConnection()->update(
             $this->getMainTable(),
             [
-                DispatchInterface::STATUS => $status,
+                DispatchInterface::STATUS => DispatchInterface::STATUS_QUEUED,
                 DispatchInterface::ATTEMPTS => $attempts,
                 DispatchInterface::LAST_ERROR => mb_substr($error, 0, 1024),
+                DispatchInterface::SCHEDULED_AT => $nextSchedule,
             ],
             [DispatchInterface::ENTITY_ID . ' = ?' => $dispatchId]
         );

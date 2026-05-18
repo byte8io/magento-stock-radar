@@ -37,9 +37,27 @@
         <columnsControls name="columns_controls"/>
         <filterSearch name="fulltext"/>
         <filters name="listing_filters"/>
+        <massaction name="listing_massaction">
+            <action name="cancel">
+                <settings>
+                    <confirm>
+                        <message translate="true">Cancel the selected subscriptions? They will not receive a back-in-stock email.</message>
+                        <title translate="true">Cancel subscriptions</title>
+                    </confirm>
+                    <url path="byte8/subscription/massCancel"/>
+                    <type>cancel</type>
+                    <label translate="true">Cancel</label>
+                </settings>
+            </action>
+        </massaction>
         <paging name="listing_paging"/>
     </listingToolbar>
     <columns name="byte8_stock_radar_subscription_listing_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>entity_id</indexField>
+            </settings>
+        </selectionsColumn>
         <column name="entity_id">
             <settings>
                 <filter>text</filter>
@@ -47,16 +65,30 @@
                 <sorting>desc</sorting>
             </settings>
         </column>
+        <column name="sku">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">SKU</label>
+            </settings>
+        </column>
+        <column name="product_name">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Product</label>
+            </settings>
+        </column>
         <column name="product_id">
             <settings>
                 <filter>text</filter>
                 <label translate="true">Product ID</label>
+                <visible>false</visible>
             </settings>
         </column>
         <column name="parent_product_id">
             <settings>
                 <filter>text</filter>
                 <label translate="true">Parent ID</label>
+                <visible>false</visible>
             </settings>
         </column>
         <column name="store_id">
@@ -99,5 +131,13 @@
                 <label translate="true">Notified</label>
             </settings>
         </column>
+        <actionsColumn name="actions" class="Byte8\StockRadar\Ui\Component\Listing\Column\Subscription\Actions">
+            <settings>
+                <indexField>entity_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>80</resizeDefaultWidth>
+                <label translate="true">Actions</label>
+            </settings>
+        </actionsColumn>
     </columns>
 </listing>

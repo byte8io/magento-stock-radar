@@ -16,6 +16,7 @@ class Options implements OptionSourceInterface
     public function toOptionArray(): array
     {
         return [
+            ['value' => SubscriptionInterface::STATUS_UNCONFIRMED, 'label' => __('Awaiting confirmation')],
             ['value' => SubscriptionInterface::STATUS_PENDING, 'label' => __('Pending')],
             ['value' => SubscriptionInterface::STATUS_NOTIFIED, 'label' => __('Notified')],
             ['value' => SubscriptionInterface::STATUS_CANCELLED, 'label' => __('Cancelled')],

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Byte8\StockRadar\Model;
 
-use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
 use Magento\Framework\Mail\Template\TransportBuilder;
@@ -17,59 +17,51 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
- * Sends a single back-in-stock email. Called by the Cron worker per dispatch row.
- *
- * Throws on any failure so the cron can record the attempt and retry; never
- * swallows errors silently.
+ * Sends the double opt-in confirmation email. Same transport pattern as
+ * Notifier — emulates the frontend area and uses the standard
+ * TransportBuilder, so any SMTP module in the stack handles delivery.
  */
-class Notifier
+class ConfirmationSender
 {
     public function __construct(
         private readonly ConfigInterface $config,
         private readonly TransportBuilder $transportBuilder,
         private readonly InlineTranslation $inlineTranslation,
-        private readonly ProductRepositoryInterface $productRepository,
         private readonly StoreManagerInterface $storeManager,
         private readonly UrlInterface $urlBuilder,
         private readonly State $appState
     ) {
     }
 
-    public function notify(
-        int $productId,
-        int $storeId,
+    public function send(
+        ProductInterface $product,
         string $email,
-        string $unsubscribeToken
+        string $confirmationToken,
+        int $storeId
     ): void {
-        $product = $this->productRepository->getById($productId, false, $storeId);
         $store = $this->storeManager->getStore($storeId);
 
-        $unsubscribeUrl = $this->urlBuilder->getUrl(
-            'stockradar/subscription/unsubscribe',
-            ['token' => $unsubscribeToken, '_scope' => $storeId, '_nosid' => true]
+        $confirmUrl = $this->urlBuilder->getUrl(
+            'stockradar/subscription/confirm',
+            ['token' => $confirmationToken, '_scope' => $storeId, '_nosid' => true]
         );
 
         $this->inlineTranslation->suspend();
         try {
-            // Build the transport INSIDE emulateAreaCode so the template renders
-            // with the correct frontend area + store context, then call
-            // sendMessage OUTSIDE it. Reason: Magento\CustomerSampleData ships
-            // a `aroundSendMessage` plugin on TransportInterface that returns
-            // null (no-op) whenever isAreaCodeEmulated() is true. Calling
-            // sendMessage from inside our emulateAreaCode would silently drop
-            // every email. Magento's own OrderSender follows the same outside-
-            // emulation pattern.
+            // Build inside emulated area for correct template render context;
+            // send OUTSIDE — Magento_CustomerSampleData's MailPlugin no-ops
+            // sendMessage when isAreaCodeEmulated() is true.
             $transport = null;
             $this->appState->emulateAreaCode(Area::AREA_FRONTEND, function () use (
                 $product,
                 $store,
                 $email,
-                $unsubscribeUrl,
+                $confirmUrl,
                 $storeId,
                 &$transport
             ) {
                 $transport = $this->transportBuilder
-                    ->setTemplateIdentifier($this->config->getEmailTemplate($storeId))
+                    ->setTemplateIdentifier($this->config->getConfirmationEmailTemplate($storeId))
                     ->setTemplateOptions([
                         'area' => Area::AREA_FRONTEND,
                         'store' => $storeId,
@@ -81,7 +73,7 @@ class Notifier
                         'product_sku' => $product->getSku(),
                         'store' => $store,
                         'store_name' => $store->getFrontendName() ?: $store->getName(),
-                        'unsubscribe_url' => $unsubscribeUrl,
+                        'confirm_url' => $confirmUrl,
                     ])
                     ->setFromByScope($this->config->getEmailSender($storeId), $storeId)
                     ->addTo($email)

@@ -9,8 +9,9 @@ declare(strict_types=1);
 namespace Byte8\StockRadar\Block\Product\View;
 
 use Byte8\StockRadar\Model\ConfigInterface;
+use Byte8\StockRadar\Model\Stock\StockChecker;
+use Byte8\StockRadar\Model\SubscribedProductTracker;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Registry;
@@ -23,9 +24,10 @@ class NotifyMe extends Template
         Template\Context $context,
         private readonly Registry $registry,
         private readonly ConfigInterface $config,
-        private readonly StockRegistryInterface $stockRegistry,
+        private readonly StockChecker $stockChecker,
         private readonly CustomerSession $customerSession,
         private readonly SerializerInterface $serializer,
+        private readonly SubscribedProductTracker $subscribedTracker,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -69,14 +71,47 @@ class NotifyMe extends Template
             return false;
         }
 
-        if ($product->getTypeId() !== 'simple') {
-            // Configurable: always show so customers can subscribe per-variant
-            // (the variant SKU is sent client-side from the option selector)
-            return $product->getTypeId() === 'configurable';
+        if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
+            // Configurable: only mount the widget if at least one variant is
+            // currently OOS. The form itself starts hidden — the swatch
+            // mixin shows it after the user clicks an OOS option.
+            return $this->configurableHasAnyOosVariant($product);
         }
 
-        $stockItem = $this->stockRegistry->getStockItem((int) $product->getId());
-        return !$stockItem->getIsInStock() || $stockItem->getQty() <= 0;
+        if ($product->getTypeId() !== 'simple') {
+            return false;
+        }
+
+        return !$this->stockChecker->isInStock(
+            (string) $product->getSku(),
+            (int) $this->_storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * True for configurable products — used by the template to start the form
+     * hidden and let the swatch-renderer mixin reveal it on OOS-option click.
+     */
+    public function isConfigurable(): bool
+    {
+        $product = $this->getProduct();
+        return $product !== null && $product->getTypeId() === ConfigurableType::TYPE_CODE;
+    }
+
+    private function configurableHasAnyOosVariant(ProductInterface $product): bool
+    {
+        $typeInstance = $product->getTypeInstance();
+        if (!$typeInstance instanceof ConfigurableType) {
+            return false;
+        }
+
+        $storeId = (int) $this->_storeManager->getStore()->getId();
+        foreach ($typeInstance->getUsedProducts($product) as $variant) {
+            if (!$this->stockChecker->isInStock((string) $variant->getSku(), $storeId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getProduct(): ?ProductInterface
@@ -100,5 +135,65 @@ class NotifyMe extends Template
     public function getSubscribeUrl(): string
     {
         return $this->getUrl('stockradar/subscription/save', ['_secure' => true]);
+    }
+
+    public function isHoneypotEnabled(): bool
+    {
+        $storeId = (int) $this->_storeManager->getStore()->getId();
+        return $this->config->isHoneypotEnabled($storeId);
+    }
+
+    /**
+     * Returns SKUs the visitor has already subscribed to in this session so the
+     * template can show "you'll be notified" copy instead of an empty form on
+     * page reload. Also surfaced to JS so it can flip state after a successful
+     * subscribe without a reload.
+     *
+     * @return string[]
+     */
+    public function getSessionSubscribedSkus(): array
+    {
+        $storeId = (int) $this->_storeManager->getStore()->getId();
+        return $this->subscribedTracker->getSubscribedSkus($storeId);
+    }
+
+    public function getSessionSubscribedSkusJson(): string
+    {
+        return $this->serializer->serialize($this->getSessionSubscribedSkus());
+    }
+
+    /**
+     * True if the current product (or any of its configurable simples) is
+     * already remembered in this session. The template uses this to render
+     * the confirmation panel server-side so reload is honoured.
+     */
+    public function isAlreadySubscribed(): bool
+    {
+        $skus = $this->getSessionSubscribedSkus();
+        if ($skus === []) {
+            return false;
+        }
+
+        $product = $this->getProduct();
+        if (!$product) {
+            return false;
+        }
+
+        if (in_array((string) $product->getSku(), $skus, true)) {
+            return true;
+        }
+
+        if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
+            $typeInstance = $product->getTypeInstance();
+            if ($typeInstance instanceof ConfigurableType) {
+                foreach ($typeInstance->getUsedProducts($product) as $variant) {
+                    if (in_array((string) $variant->getSku(), $skus, true)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

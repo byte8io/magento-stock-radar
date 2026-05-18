@@ -12,4 +12,16 @@
               type="html"
               module="Byte8_StockRadar"
               area="frontend"/>
+    <template id="byte8_stock_radar_security_confirmation_email_template"
+              label="Stock Radar — confirm subscription (double opt-in)"
+              file="confirm_subscription.html"
+              type="html"
+              module="Byte8_StockRadar"
+              area="frontend"/>
+    <template id="byte8_stock_radar_admin_alert_email_template"
+              label="Stock Radar — admin alert (high-demand SKU)"
+              file="admin_alert.html"
+              type="html"
+              module="Byte8_StockRadar"
+              area="frontend"/>
 </config>

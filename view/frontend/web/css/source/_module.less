@@ -1,0 +1,112 @@
+//
+//  Stock Radar — back-in-stock subscribe widget
+//  ____________________________________________
+
+//
+//  Common
+//  --------------------------------------------
+
+& when (@media-common = true) {
+
+    // When the widget is relocated to the bottom of the product info column
+    // on configurables (notify-me.js does this on init to prevent layout
+    // shift from toggling visibility), give it a top divider so it doesn't
+    // run into the wishlist/compare row above.
+    .byte8-stock-radar--moved {
+        border-top: 1px solid @color-gray80;
+        margin-top: @indent__base;
+        padding-top: @indent__base;
+    }
+
+    .byte8-stock-radar {
+        margin: @indent__base 0;
+
+        &__title {
+            font-size: @font-size__l;
+            margin: 0 0 @indent__s;
+        }
+
+        &__label {
+            display: block;
+            font-size: @font-size__s;
+            margin-bottom: @indent__xs;
+        }
+
+        // Inline email input + submit button
+        &__row {
+            align-items: stretch;
+            display: flex;
+            gap: @indent__s;
+            width: 100%;
+        }
+
+        &__input {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        &__submit {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        &__message {
+            font-size: @font-size__s;
+            margin-top: @indent__s;
+
+            &.error {
+                color: @color-red10;
+            }
+
+            &.success {
+                color: @color-dark-green1;
+            }
+        }
+
+        &__subscribed-panel {
+            background: @color-white-smoke;
+            border: 1px solid @color-gray80;
+            border-radius: 3px;
+            padding: @indent__s @indent__base;
+        }
+    }
+}
+
+//
+//  Configurable swatches — re-enable click on out-of-stock options
+//  --------------------------------------------
+//  Magento's blank theme sets `pointer-events: none` on
+//  `.swatch-option.disabled` (theme-frontend-blank/Magento_Swatches/web/css/source/_module.less),
+//  which suppresses every click at the browser level — our swatch-renderer
+//  mixin's _OnClick override never fires. We re-enable it so customers can
+//  pick an out-of-stock variant to subscribe to a back-in-stock alert. The
+//  diagonal-line strikethrough visual is unaffected (it lives on `:after`).
+.swatch-attribute .swatch-option.disabled {
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+// Swatch the customer has clicked to subscribe to (always an out-of-stock
+// option). Distinct outline so it doesn't look identical to an in-stock
+// `.selected` pick — the strikethrough stays, plus a red 2px outline.
+.swatch-attribute .swatch-option.byte8-stock-radar-oos-selected {
+    outline: 2px solid @color-red10;
+    outline-offset: 1px;
+}
+
+//
+//  Mobile
+//  --------------------------------------------
+
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__s) {
+
+    .byte8-stock-radar {
+        &__row {
+            flex-direction: column;
+        }
+
+        &__submit {
+            width: 100%;
+        }
+    }
+}

@@ -25,8 +25,10 @@
                 comment="SHA-256 of lowercased email — used for GDPR delete lookups"/>
         <column xsi:type="varchar" name="unsubscribe_token" nullable="false" length="64"
                 comment="Random token for one-click unsubscribe"/>
+        <column xsi:type="varchar" name="confirmation_token" nullable="true" length="64"
+                comment="Random token sent in the double opt-in email; null when opt-in is disabled or already confirmed"/>
         <column xsi:type="varchar" name="status" nullable="false" length="16" default="pending"
-                comment="pending|notified|cancelled|bounced"/>
+                comment="unconfirmed|pending|notified|cancelled|bounced"/>
         <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP"
                 comment="Created At"/>
         <column xsi:type="timestamp" name="notified_at" nullable="true"

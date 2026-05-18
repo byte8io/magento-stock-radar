@@ -45,12 +45,96 @@
                     <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
                 </field>
             </group>
-            <group id="pingbell" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Pingbell integration</label>
+            <group id="admin_alert" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Admin alerts</label>
                 <field id="threshold" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Subscriber alert threshold</label>
-                    <comment>When pending subscriber count for any single product exceeds this number, post an admin notification (requires Byte8_Pingbell). 0 disables.</comment>
+                    <label>High-demand subscriber threshold</label>
+                    <comment>When pending subscriber count for any single product first crosses this number, alert the admin. 0 disables both transports below.</comment>
                     <validate>validate-digits validate-zero-or-greater</validate>
+                </field>
+                <field id="bell_enabled" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Post to admin notification inbox</label>
+                    <comment>When on, drops a message into the admin bell-icon inbox (top-right of the admin header).</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="email_enabled" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send email to admin</label>
+                    <comment>When on, sends a transactional email so the admin gets the alert outside the admin panel.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="recipient_email" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Admin recipient email</label>
+                    <comment>Leave blank to use the General Contact email (Stores → Configuration → General → Store Email Addresses → General Contact).</comment>
+                    <validate>validate-email</validate>
+                    <depends>
+                        <field id="email_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="email_sender" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Email sender</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                    <depends>
+                        <field id="email_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="email_template" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Email template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <depends>
+                        <field id="email_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="security" translate="label comment" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Abuse protection</label>
+                <comment>Each option is independent. Defaults ship the protections that have no UX cost; CAPTCHA and double opt-in are opt-in because they add friction.</comment>
+                <field id="rate_limit_enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Rate limit subscribe attempts</label>
+                    <comment>Limits per-IP and per-email subscribe attempts. Recommended on.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="rate_limit_per_ip" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max subscribes per IP / 5 min</label>
+                    <comment>Default 5. Applies to both storefront and GraphQL.</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="rate_limit_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="rate_limit_per_email" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max subscribes per email / hour</label>
+                    <comment>Default 3. Prevents one email from subscribing to many SKUs in a short window.</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="rate_limit_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="honeypot_enabled" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Honeypot field</label>
+                    <comment>Adds a hidden form field that bots fill in. Zero UX cost. Recommended on.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="hide_created_flag" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Hide "already subscribed" hint in GraphQL</label>
+                    <comment>When on, the byte8StockRadarSubscribe mutation always returns created=true, preventing email-enumeration probes. Recommended on.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="captcha_enabled" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Require CAPTCHA</label>
+                    <comment>Uses Magento's built-in CAPTCHA (form id "byte8_stock_radar_subscribe"). Configure the CAPTCHA type in Customers → Customer Configuration → CAPTCHA.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="double_optin_enabled" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Require double opt-in (email confirmation)</label>
+                    <comment>Sends a confirmation email before the subscription becomes active. Adds friction but eliminates the "subscribe someone else" attack class.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="confirmation_email_template" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Confirmation email template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <depends>
+                        <field id="double_optin_enabled">1</field>
+                    </depends>
                 </field>
             </group>
         </section>

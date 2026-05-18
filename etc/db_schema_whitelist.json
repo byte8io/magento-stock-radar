@@ -9,6 +9,7 @@
             "email": true,
             "email_hash": true,
             "unsubscribe_token": true,
+            "confirmation_token": true,
             "status": true,
             "created_at": true,
             "notified_at": true,
