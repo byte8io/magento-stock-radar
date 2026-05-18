@@ -47,6 +47,7 @@ const sidebars: SidebarsConfig = {
         'advanced/events',
         'advanced/gdpr',
         'advanced/plenty-bridge',
+        'advanced/admin-alerts',
       ],
     },
   ],

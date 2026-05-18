@@ -27,4 +27,4 @@ Set the master switch on a website level when you want the same behaviour across
 |---|---|
 | Throttle window, subscription expiry | [Dispatch](/docs/configuration/dispatch) |
 | Sender, email template | [Email](/docs/configuration/email) |
-| Pingbell threshold | [Email](/docs/configuration/email#pingbell-integration) (deferred to compatibility module) |
+| High-demand admin-alert threshold | [Admin alerts](/docs/advanced/admin-alerts) |

@@ -101,7 +101,7 @@ Plugin around `SubscriptionService::subscribe` to add custom validation — VIP-
 
 ## Custom events Stock Radar dispatches
 
-Currently **none**. The Plenty bridge and Pingbell compatibility module hook in via plugins on the Service / Notifier layer rather than custom events, because plugin ordering is more deterministic than event subscriber ordering.
+Currently **none**. The Plenty bridge hooks in via plugins on the Service / Notifier layer rather than custom events, because plugin ordering is more deterministic than event subscriber ordering.
 
 If you need a custom event for an integration, file an issue on GitHub with the use case — non-breaking event additions are easy.
 

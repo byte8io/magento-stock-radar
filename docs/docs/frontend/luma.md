@@ -27,8 +27,10 @@ That container sits above the SKU display on the standard PDP — visually obvio
 `Block\Product\View\NotifyMe::isAvailable()` controls visibility:
 
 - **Simple product** — shown when `is_in_stock = 0` or `qty <= 0`.
-- **Configurable product** — always shown, because configurables can have OOS variants even when the parent shows in-stock. The variant picker drives the actual subscribe-or-not decision via the JS bridge.
+- **Configurable product** — the widget mounts only when at least one variant is out of stock. The form itself starts hidden; a [`swatch-renderer-mixin`](https://github.com/byte8io/magento-stock-radar/blob/main/packages/modules/module-stock-radar/view/frontend/web/js/swatch-renderer-mixin.js) strips the `disabled` class from OOS swatch options and reveals the form when the customer clicks one. Cart-add stays disabled for OOS — only the subscribe path is unlocked.
 - **Other types** (bundle, grouped, virtual) — hidden by default. To enable, override the block class.
+
+If the customer has already subscribed in this session, the form is replaced server-side by a "you're on the list" panel — the `SubscribedProductTracker` keeps the SKU list in the catalog session, so a page reload no longer re-prompts.
 
 ## How variant SKU sync works
 
@@ -82,3 +84,9 @@ The block class exposes everything the template needs:
 - **No service worker registration** — the form doesn't need it.
 - **No customer-data sections** — subscriptions are fetched server-side on the account page, no Magento private content involved.
 - **No checkout integration** — Stock Radar is PDP-only. Checkout flow is untouched.
+
+## Testing
+
+Walking the Luma integration end-to-end is covered by the manual test plan kept alongside the product concept doc — both customer flows (simple subscribe, configurable per-variant subscribe, double opt-in, unsubscribe, account page) and admin flows (grid, mass-cancel, demand heatmap). Run it against a fresh install before tagging a release.
+
+See [`packages/docs/stock-radar/MANUAL_TEST_PLAN.md`](https://github.com/byte8io/magento-stock-radar/blob/main/packages/docs/stock-radar/MANUAL_TEST_PLAN.md) in the source repo.

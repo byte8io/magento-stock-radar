@@ -40,3 +40,16 @@ prefix. The merge commit's first line becomes the changelog entry.
 If you need to force a specific version (e.g. correcting a bad bump),
 add `Release-As: X.Y.Z` to a commit body on `main`. The bot will pick
 that up on the next run.
+
+## The v1.0.0 bootstrap
+
+The 1.0.0 entry in [`CHANGELOG.md`](./CHANGELOG.md) was written by
+hand because release-please needs a baseline version to start from.
+From v1.0.1 onwards every entry is generated from Conventional Commits —
+do not append to the CHANGELOG manually except for an emergency
+correction.
+
+If release-please's first PR for this repo proposes a version other
+than 1.0.0, set `.release-please-manifest.json` to `{ ".": "1.0.0" }`
+on `main` (or pass `--initial-version 1.0.0` to the CLI) so the bot
+picks up from where the hand-written entry ends.

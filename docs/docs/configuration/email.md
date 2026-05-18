@@ -49,14 +49,12 @@ If you've installed the [Plenty bridge](/docs/advanced/plenty-bridge), it regist
 
 The enriched template falls back gracefully when Plenty data isn't available — a product not tracked in Plenty silently omits the callout.
 
-## Pingbell integration
+## Admin alerts on high-demand SKUs
 
 | Field | Scope | Default |
 |---|---|---|
-| `byte8_stock_radar/pingbell/threshold` | Website | 50 |
+| `byte8_stock_radar/admin_alert/threshold` | Website | 50 |
 
-When pending subscriber count for any single product exceeds this number, post an admin notification via `Byte8\Pingbell` so merchandisers see "100+ subscribers waiting on SKU-12345" without having to open the demand heatmap.
+When pending subscriber count for any single product **first crosses** this number, Stock Radar posts a message into the Magento admin notification inbox (bell icon top-right). Merchandisers see "Stock Radar: 50 customers waiting for SKU-12345" without having to open the demand heatmap.
 
-:::note Compatibility module pending
-Pingbell wiring lives in a future compatibility module (`byte8/module-stock-radar-pingbell`). Until that ships, the threshold field is present but inert. The free Pingbell module on its own doesn't know about Stock Radar's tables.
-:::
+The alert fires once per crossing — subsequent subscribers above the threshold don't re-trigger. Set to `0` to disable. Full details in [admin alerts](/docs/advanced/admin-alerts).
