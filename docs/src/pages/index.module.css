@@ -66,14 +66,29 @@
   flex-wrap: wrap;
 }
 
-/* Stats strip */
+/* Stats strip — fixed 4-up on desktop, 2-up on tablet, 1-up on mobile.
+   Avoids the 3+1 wrap the auto-fit grid produced when the 4th item
+   couldn't squeeze into the row. */
 .statsRow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
   max-width: 880px;
   margin: 4rem auto 0;
   padding: 0 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .statsRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .statsRow {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat {
