@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Byte8\StockRadar\Observer;
 
+use Byte8\StockRadar\Model\Activation\Activation;
 use Byte8\StockRadar\Model\ConfigInterface;
 use Byte8\StockRadar\Model\ResourceModel\Dispatch as DispatchResource;
 use Byte8\StockRadar\Model\ResourceModel\Subscription as SubscriptionResource;
@@ -32,7 +33,8 @@ class StockSaveObserver implements ObserverInterface
         private readonly SubscriptionResource $subscriptionResource,
         private readonly DispatchResource $dispatchResource,
         private readonly StoreManagerInterface $storeManager,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly Activation $activation
     ) {
     }
 
@@ -57,6 +59,10 @@ class StockSaveObserver implements ObserverInterface
             foreach ($this->storeManager->getStores() as $store) {
                 $storeId = (int) $store->getId();
                 if (!$this->config->isActive($storeId)) {
+                    continue;
+                }
+
+                if (!$this->activation->isActive($storeId)) {
                     continue;
                 }
 

@@ -14,6 +14,29 @@
             <label>Stock Radar</label>
             <tab>byte8</tab>
             <resource>Byte8_StockRadar::config</resource>
+            <group id="activation" translate="label comment" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Activation</label>
+                <comment><![CDATA[The module ships free and open-source on Packagist. To activate it, get a free activation key at <a href="https://byte8.io/activate/stock-radar" target="_blank">byte8.io/activate/stock-radar</a> and paste it below. Without a key, subscribe + dispatch flows are silently skipped.]]></comment>
+                <field id="key" translate="label comment" type="obscure" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Activation Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment><![CDATA[Format: <code>b8a_stk_<32 hex chars></code>. Stored encrypted via Magento's standard encryption.]]></comment>
+                </field>
+                <field id="endpoint" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Verify Endpoint</label>
+                    <comment><![CDATA[Default <code>https://api.byte8.io/graphql</code>. Override only for staging / development.]]></comment>
+                </field>
+                <field id="timeout" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Verify Timeout (seconds)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Hard response timeout for the verify call. Default 5s. Verify fires at most once per 24h.</comment>
+                </field>
+                <field id="connect_timeout" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Verify Connect Timeout (seconds)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>TCP/TLS connect timeout for the verify call. Default 2s.</comment>
+                </field>
+            </group>
             <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">

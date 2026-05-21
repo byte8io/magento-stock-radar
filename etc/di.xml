@@ -34,7 +34,19 @@
                 <item name="byte8_stock_radar_expire" xsi:type="object">Byte8\StockRadar\Console\Command\ExpireCommand</item>
                 <item name="byte8_stock_radar_cancel" xsi:type="object">Byte8\StockRadar\Console\Command\CancelCommand</item>
                 <item name="byte8_stock_radar_stats" xsi:type="object">Byte8\StockRadar\Console\Command\StatsCommand</item>
+                <item name="byte8_stock_radar_activate" xsi:type="object">Byte8\StockRadar\Console\Command\ActivateCommand</item>
             </argument>
+        </arguments>
+    </type>
+
+    <!-- Activation: bind Stock Radar's product_id + config path prefix to
+         the shared Byte8\Activation\Model\Activation gate. The empty
+         subclass Model/Activation/Activation.php exists as a type-hint
+         anchor for product-specific DI. -->
+    <type name="Byte8\StockRadar\Model\Activation\Activation">
+        <arguments>
+            <argument name="productId" xsi:type="string">stock_radar</argument>
+            <argument name="configPathPrefix" xsi:type="string">byte8_stock_radar/activation/</argument>
         </arguments>
     </type>
 </config>

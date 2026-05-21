@@ -8,6 +8,11 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <byte8_stock_radar>
+            <activation>
+                <endpoint>https://api.byte8.io/graphql</endpoint>
+                <timeout>5</timeout>
+                <connect_timeout>2</connect_timeout>
+            </activation>
             <general>
                 <active>0</active>
             </general>

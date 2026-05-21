@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Byte8\StockRadar\Model;
 
 use Byte8\StockRadar\Api\Data\SubscriptionInterface;
+use Byte8\StockRadar\Model\Activation\Activation;
 use Byte8\StockRadar\Model\ResourceModel\Subscription as SubscriptionResource;
 use Byte8\StockRadar\Model\Stock\StockChecker;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -36,7 +37,8 @@ class SubscriptionService
         private readonly RateLimiter $rateLimiter,
         private readonly ConfirmationSender $confirmationSender,
         private readonly LoggerInterface $logger,
-        private readonly AdminAlertNotifier $adminAlertNotifier
+        private readonly AdminAlertNotifier $adminAlertNotifier,
+        private readonly Activation $activation
     ) {
     }
 
@@ -69,6 +71,10 @@ class SubscriptionService
         }
 
         if (!$this->config->isActive($storeId)) {
+            throw new LocalizedException(__('Stock notifications are not enabled for this store.'));
+        }
+
+        if (!$this->activation->isActive($storeId)) {
             throw new LocalizedException(__('Stock notifications are not enabled for this store.'));
         }
 

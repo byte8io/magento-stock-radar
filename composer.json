@@ -13,7 +13,8 @@
         "magento/module-graph-ql": "*",
         "magento/module-store": "*",
         "magento/module-ui": "*",
-        "byte8/module-core": "*"
+        "byte8/module-core": "*",
+        "byte8/module-activation": "^1"
     },
     "suggest": {
         "magento/module-captcha": "Enables the CAPTCHA toggle under Byte8 → Stock Radar → Abuse protection.",
