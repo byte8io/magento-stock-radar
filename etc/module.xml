@@ -12,7 +12,6 @@
             <module name="Magento_CatalogInventory"/>
             <module name="Magento_ConfigurableProduct"/>
             <module name="Byte8_Core"/>
-            <module name="Byte8_Activation"/>
         </sequence>
     </module>
 </config>

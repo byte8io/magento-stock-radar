@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Byte8\StockRadar\Console\Command;
 
-use Byte8\Activation\Model\Status;
+use Byte8\Core\Model\Activation\Status;
 use Byte8\StockRadar\Model\Activation\Activation;
 use Magento\Config\Model\ResourceModel\Config as ConfigResource;
 use Magento\Framework\App\Cache\TypeListInterface;
