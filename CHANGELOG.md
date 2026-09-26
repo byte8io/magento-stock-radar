@@ -2,6 +2,18 @@
 
 All notable changes to `byte8/module-stock-radar` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); subsequent releases are written automatically by [release-please](https://github.com/googleapis/release-please) from Conventional Commits — see [`RELEASING.md`](./RELEASING.md).
 
+## [1.1.1](https://github.com/byte8io/magento-stock-radar/compare/v1.1.0...v1.1.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* relax byte8/module-core constraint to allow 3.x ([b3cbd4f](https://github.com/byte8io/magento-stock-radar/commit/b3cbd4f367339de653ea6983bcff72408537220b))
+
+
+### Refactor
+
+* **activation:** repoint gate to byte8/module-core ([6a796be](https://github.com/byte8io/magento-stock-radar/commit/6a796beb6cc8384252114c61607520a4df7c886c))
+
 ## [1.1.0](https://github.com/byte8io/magento-stock-radar/compare/v1.0.1...v1.1.0) (2026-05-21)
 
 
